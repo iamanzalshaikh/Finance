@@ -63,12 +63,23 @@ app.use(cookieParser());
 console.log('🍪 Cookie parser middleware loaded');
 
 
-app.use(cors({
-  origin: 'https://finance-5aly.onrender.com', // ✅ Your deployed frontend
-  credentials: true, // ✅ Allow cookies & sessions
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+// app.use(cors({
+//   origin: 'https://finance-5aly.onrender.com', // ✅ Your deployed frontend
+//   credentials: true, // ✅ Allow cookies & sessions
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+// }));
+
+
+
+app.use(
+  cors({
+    origin: "https://financeflow12345.netlify.app", // ✅ your frontend domain
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 console.log('✅ CORS configured for production: https://finance-5aly.onrender.com');
 
