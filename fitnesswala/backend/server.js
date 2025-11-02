@@ -16,10 +16,15 @@ dotenv.config();
 const app = express();
 
 // ✅ Allow frontend access
-app.use(cors({
-  origin: 'http://localhost:5173', // Frontend (Vite) default port
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: [
+      'http://localhost:5173', // ✅ Local development (Vite)
+      'https://finance-5aly.onrender.com', // ✅ Production frontend (Render)
+    ],
+    credentials: true, // ✅ Allow cookies & authentication
+  })
+)
 
 app.use(express.json());
 
