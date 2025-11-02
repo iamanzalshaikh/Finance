@@ -63,23 +63,14 @@ app.use(cookieParser());
 console.log('🍪 Cookie parser middleware loaded');
 
 
-const allowedOrigins = [
-  'http://localhost:5173',           // Local dev frontend
-  'https://finance-5aly.onrender.com' // ✅ Deployed frontend
-];
-
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true, // ✅ Allow cookies
+  origin: 'https://finance-5aly.onrender.com', // ✅ Your deployed frontend
+  credentials: true, // ✅ Allow cookies & sessions
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+console.log('✅ CORS configured for production: https://finance-5aly.onrender.com');
 
 console.log('🔧 CORS configured for localhost + Render frontend');
 // ✅ STEP 3: Body parser
