@@ -231,6 +231,11 @@ export const AuthContext = createContext();
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
+// ✅ ADD THESE DEBUG LINES
+console.log('🔧 Environment Variables:', import.meta.env);
+console.log('🌐 API_BASE_URL:', API_BASE_URL);
+console.log('🌐 Full login URL would be:', `${API_BASE_URL}/auth/login`);
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
