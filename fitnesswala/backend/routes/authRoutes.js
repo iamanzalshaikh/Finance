@@ -8,6 +8,8 @@ const authRoutes = express.Router();
 authRoutes.post('/register', registerUser);
 authRoutes.post('/login', loginUser);
 authRoutes.get('/me', authMiddleware, getCurrentUser); // ✅ NEW ROUTE
+authRoutes.post('/logout', authMiddleware, logoutUser); // ✅ New logout route
 
 
 export default authRoutes;
+
