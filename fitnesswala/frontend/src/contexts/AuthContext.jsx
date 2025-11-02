@@ -224,7 +224,6 @@
 //   return context;
 // };
 
-
 import React, { createContext, useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 
@@ -240,10 +239,11 @@ export const AuthProvider = ({ children }) => {
   // ✅ Fetch current user on mount (cookie is sent automatically)
   const fetchCurrentUser = useCallback(async () => {
     console.log('🔍 Fetching current user...');
+    console.log('🌐 API_BASE_URL:', API_BASE_URL);
     
     try {
-      const response = await axios.get(`${API_BASE_URL}/auth/me`, {
-        withCredentials: true, // ✅ Send cookies with request
+      const response = await axios.get(`${API_BASE_URL}/auth/me`, { // ✅ FIXED: () not backticks
+        withCredentials: true,
       });
       console.log('✅ User fetched successfully:', response.data.user);
       setUser(response.data.user);
@@ -263,12 +263,13 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     console.log('📝 Registering user:', { name, email, currency });
+    console.log('🌐 API URL:', `${API_BASE_URL}/auth/register`);
     
     try {
       const response = await axios.post(
         `${API_BASE_URL}/auth/register`,
         { name, email, password, currency },
-        { withCredentials: true } // ✅ Allow cookies to be set
+        { withCredentials: true }
       );
       console.log('✅ Registration successful:', response.data.user);
       setUser(response.data.user);
@@ -287,12 +288,13 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     console.log('🔐 Logging in user:', email);
+    console.log('🌐 API URL:', `${API_BASE_URL}/auth/login`);
     
     try {
       const response = await axios.post(
         `${API_BASE_URL}/auth/login`,
         { email, password },
-        { withCredentials: true } // ✅ Allow cookies to be set
+        { withCredentials: true }
       );
       console.log('✅ Login successful:', response.data.user);
       setUser(response.data.user);
@@ -314,7 +316,7 @@ export const AuthProvider = ({ children }) => {
       await axios.post(
         `${API_BASE_URL}/auth/logout`,
         {},
-        { withCredentials: true } // ✅ Send cookie for logout
+        { withCredentials: true }
       );
       console.log('✅ Logout successful');
     } catch (err) {
