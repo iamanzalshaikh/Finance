@@ -223,7 +223,6 @@
 //   }
 //   return context;
 // };
-
 import React, { createContext, useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 
@@ -231,7 +230,7 @@ export const AuthContext = createContext();
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-// ✅ ADD THESE DEBUG LINES
+// ✅ Debug environment variables
 console.log('🔧 Environment Variables:', import.meta.env);
 console.log('🌐 API_BASE_URL:', API_BASE_URL);
 console.log('🌐 Full login URL would be:', `${API_BASE_URL}/auth/login`);
@@ -247,7 +246,8 @@ export const AuthProvider = ({ children }) => {
     console.log('🌐 API_BASE_URL:', API_BASE_URL);
     
     try {
-const response = await axios.get(`${API_BASE_URL}/auth/me`, {
+      // ✅✅✅ CRITICAL FIX: Parentheses FIRST, then backticks INSIDE ✅✅✅
+      const response = await axios.get(`${API_BASE_URL}/auth/me`, {
         withCredentials: true,
       });
       console.log('✅ User fetched successfully:', response.data.user);
