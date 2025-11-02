@@ -247,9 +247,9 @@ export const AuthProvider = ({ children }) => {
     
     try {
       // ✅✅✅ CRITICAL FIX: Parentheses FIRST, then backticks INSIDE ✅✅✅
-      const response = await axios.get(`${API_BASE_URL}/auth/me`, {
-        withCredentials: true,
-      });
+   const response = await axios.get(`${API_BASE_URL}/auth/me`, {
+  withCredentials: true,
+});
       console.log('✅ User fetched successfully:', response.data.user);
       setUser(response.data.user);
     } catch (err) {
