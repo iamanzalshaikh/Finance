@@ -247,7 +247,7 @@ export const AuthProvider = ({ children }) => {
     console.log('🌐 API_BASE_URL:', API_BASE_URL);
     
     try {
-      const response = await axios.get(`${API_BASE_URL}/auth/me`, { // ✅ FIXED: () not backticks
+const response = await axios.get(`${API_BASE_URL}/auth/me`, {
         withCredentials: true,
       });
       console.log('✅ User fetched successfully:', response.data.user);
