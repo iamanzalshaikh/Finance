@@ -224,7 +224,6 @@
 //   return context;
 // };
 
-
 import React, { createContext, useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 
@@ -246,23 +245,36 @@ export const AuthProvider = ({ children }) => {
   const fetchCurrentUser = useCallback(async () => {
     console.log('🔍 Fetching current user...');
     console.log('🌐 API_BASE_URL:', API_BASE_URL);
+    console.log('🔗 Full URL:', `${API_BASE_URL}/auth/me`);
     
     try {
-      // ✅✅✅ CRITICAL FIX: Parentheses FIRST, then backticks INSIDE ✅✅✅
-   const response = await axios.get(`${API_BASE_URL}/auth/me`, {
-  withCredentials: true,
-});
+      console.log('📤 Sending GET request to /auth/me with withCredentials: true');
+      
+      const response = await axios.get(`${API_BASE_URL}/auth/me`, {
+        withCredentials: true,
+      });
+      
+      console.log('📥 Response received:', response);
       console.log('✅ User fetched successfully:', response.data.user);
+      console.log('🍪 Response headers:', response.headers);
+      
       setUser(response.data.user);
     } catch (err) {
-      console.error('❌ Failed to fetch user:', err.response?.data || err.message);
+      console.error('❌ Failed to fetch user');
+      console.error('Error status:', err.response?.status);
+      console.error('Error data:', err.response?.data);
+      console.error('Error message:', err.message);
+      console.error('Full error:', err);
+      
       setUser(null);
     } finally {
       setLoading(false);
+      console.log('✅ fetchCurrentUser completed, loading set to false');
     }
   }, []);
 
   useEffect(() => {
+    console.log('🚀 AuthProvider mounted, calling fetchCurrentUser');
     fetchCurrentUser();
   }, [fetchCurrentUser]);
 
@@ -273,17 +285,25 @@ export const AuthProvider = ({ children }) => {
     console.log('🌐 API URL:', `${API_BASE_URL}/auth/register`);
     
     try {
+      console.log('📤 Sending POST to /auth/register');
+      
       const response = await axios.post(
         `${API_BASE_URL}/auth/register`,
         { name, email, password, currency },
         { withCredentials: true }
       );
+      
+      console.log('📥 Registration response:', response);
       console.log('✅ Registration successful:', response.data.user);
+      console.log('🍪 Set-Cookie in response?', response.headers['set-cookie']);
+      
       setUser(response.data.user);
       return response.data;
     } catch (err) {
       const errorMsg = err.response?.data?.error || err.message;
       console.error('❌ Registration failed:', errorMsg);
+      console.error('Full error:', err.response || err);
+      
       setError(errorMsg);
       throw new Error(errorMsg);
     } finally {
@@ -298,17 +318,36 @@ export const AuthProvider = ({ children }) => {
     console.log('🌐 API URL:', `${API_BASE_URL}/auth/login`);
     
     try {
+      console.log('📤 Sending POST to /auth/login');
+      console.log('📤 Request config: withCredentials = true');
+      
       const response = await axios.post(
         `${API_BASE_URL}/auth/login`,
         { email, password },
         { withCredentials: true }
       );
+      
+      console.log('📥 Login response received:', response);
       console.log('✅ Login successful:', response.data.user);
+      console.log('🍪 Response headers:', response.headers);
+      console.log('🍪 Set-Cookie header:', response.headers['set-cookie']);
+      console.log('🍪 All cookies after login:', document.cookie);
+      
       setUser(response.data.user);
+      
+      // Check if cookie was set
+      setTimeout(() => {
+        console.log('🍪 Cookies 1 second after login:', document.cookie);
+      }, 1000);
+      
       return response.data;
     } catch (err) {
       const errorMsg = err.response?.data?.error || err.message;
       console.error('❌ Login failed:', errorMsg);
+      console.error('Error status:', err.response?.status);
+      console.error('Error data:', err.response?.data);
+      console.error('Full error:', err);
+      
       setError(errorMsg);
       throw new Error(errorMsg);
     } finally {
@@ -318,6 +357,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = useCallback(async () => {
     console.log('🚪 Logging out user...');
+    console.log('🍪 Cookies before logout:', document.cookie);
     
     try {
       await axios.post(
@@ -326,8 +366,10 @@ export const AuthProvider = ({ children }) => {
         { withCredentials: true }
       );
       console.log('✅ Logout successful');
+      console.log('🍪 Cookies after logout:', document.cookie);
     } catch (err) {
       console.error('⚠️ Logout request failed:', err.message);
+      console.error('Full error:', err);
     } finally {
       setUser(null);
     }
@@ -335,8 +377,52 @@ export const AuthProvider = ({ children }) => {
 
   // ✅ Set withCredentials globally for all axios requests
   useEffect(() => {
+    console.log('🔧 Setting up axios defaults...');
     axios.defaults.withCredentials = true;
-    console.log('🔧 Axios configured with withCredentials: true');
+    console.log('✅ Axios configured with withCredentials: true');
+    
+    // Add request interceptor to log all requests
+    const requestInterceptor = axios.interceptors.request.use(
+      (config) => {
+        console.log('📤 Axios Request:', {
+          method: config.method?.toUpperCase(),
+          url: config.url,
+          withCredentials: config.withCredentials,
+          headers: config.headers,
+        });
+        return config;
+      },
+      (error) => {
+        console.error('❌ Request interceptor error:', error);
+        return Promise.reject(error);
+      }
+    );
+
+    // Add response interceptor to log all responses
+    const responseInterceptor = axios.interceptors.response.use(
+      (response) => {
+        console.log('📥 Axios Response:', {
+          status: response.status,
+          url: response.config.url,
+          data: response.data,
+        });
+        return response;
+      },
+      (error) => {
+        console.error('❌ Response interceptor error:', {
+          status: error.response?.status,
+          url: error.config?.url,
+          data: error.response?.data,
+        });
+        return Promise.reject(error);
+      }
+    );
+
+    // Cleanup interceptors on unmount
+    return () => {
+      axios.interceptors.request.eject(requestInterceptor);
+      axios.interceptors.response.eject(responseInterceptor);
+    };
   }, []);
 
   return (
